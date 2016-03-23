@@ -1,44 +1,33 @@
-#! python3
-# -*- coding:utf-8 -*-
-
-from flask import Flask, request, redirect, make_response,abort
+from flask import Flask, render_template
 from flask.ext.script import Manager
+from flask.ext.bootstrap import Bootstrap
+from flask.ext.moment import moment
 
 app = Flask(__name__)
+
 manager = Manager(app)
+bootstrap = Bootstrap(app)
+moment = Moment(app)
 
-# @app.route('/')
-# def index():
-#     user_agent = request.headers.get('User-Agent')
-#     return '<p>Your browser is {}</p>'.format(user_agent)
+from datetime import datetime
 
-# @app.route('/')
-# def index():
-#     return '<h1>Bad Request</h1>', 400
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
-# @app.route('/')
-# def index():
-#     response = make_response('<h1>This document carries cookie!</h1>')
-#     response.set_cookie('answer', '42')
-#     return response
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_templates('500.html'), 500
 
 @app.route('/')
 def index():
-    return redirect('http://www.baidu.com')
+    return render_template('index.html', current_time = datetime.utcnow())
 
-# @app.route('/user/<name>')
-# def user(name):
-#     return '<h1>Hello, %s!</h1>' % name
 
-@app.route('/user/<id>')
-def get_user(id):
-    user = load_user(id)
-    if not user:
-        abort(404)
-    return '<h1>Hello, %s!</h1>' % name
+@app.route('/user/<name>')
+def user(name):
+    return render_template('user.html', name=name)
 
-# if __name__ == '__main__':
-#     app.run(debug = True)
 
 if __name__ == '__main__':
     manager.run()
