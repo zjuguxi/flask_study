@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 from flask.ext.script import Manager
 from flask.ext.bootstrap import Bootstrap
-from flask.ext.moment import moment
+from flask.ext.moment import Moment
 
 app = Flask(__name__)
 
