@@ -1,5 +1,5 @@
 from flask import Flask, render_template, session, redirect, url_for, flash
-from flask.ext.script import Manager
+from flask.ext.script import Manager, Shell
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.moment import Moment
 from flask.ext.wtf import Form
@@ -19,6 +19,10 @@ db = SQLAlchemy(app)
 manager = Manager(app)
 bootstrap = Bootstrap(app)
 moment = Moment(app)
+
+def make_shell_context():
+    return dict(app = app, db = db, User = User, Role = Role)
+manager.add_command('shell', Shell(make_context = make_shell_context))
 
 
 class NameForm(Form):
@@ -59,7 +63,7 @@ def index():
     form = NameForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username = form.name.data).first()
-        if user is not None and:
+        if user is not None:
             user = User(username = form.name.data)
             db.session.add(user)
             session['known'] = False
