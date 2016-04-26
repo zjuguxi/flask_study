@@ -17,7 +17,7 @@ app.config['SECRET_KEY'] = 'hard to guess string'
 app.config['SQLALCHEMY_DATABASE_URI'] = \
 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
-
+app.config.from_object(__name__)
 db = SQLAlchemy(app)
 
 manager = Manager(app)
