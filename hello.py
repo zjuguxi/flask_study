@@ -25,6 +25,7 @@ app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+app.config['FLASKY_ADMIN'] = os.environ.get('FLASKY_ADMIN')
 
 db = SQLAlchemy(app)
 
@@ -42,7 +43,7 @@ def send_email(to, subject, template, **kwargs)
     msg.body = render_template(template + '.txt', **kwargs)
     msg.html = render_template(tenplate + '.html', **kwargs)
     mail.send(msg)
-
+    
 def make_shell_context():
     return dict(app = app, db = db, User = User, Role = Role)
 manager.add_command('shell', Shell(make_context = make_shell_context))
@@ -89,9 +90,10 @@ def index():
             user = User(username = form.name.data)
             db.session.add(user)
             session['known'] = False
+            if app.config['FLASKY_ADMIN']:
+                send_email(app.config['FLASKY_ADMIN', 'New User', 'mail/new_user', user = user])
         else:
             session['known'] = True
-
         session['name'] = form.name.data
         form.name.data = ''
         return redirect(url_for('index'))
