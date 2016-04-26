@@ -18,6 +18,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = \
 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 app.config.from_object(__name__)
+app.config['FLASKY_MAIL_SUBJECT_PREFIX'] = '[FLASKY]'
+app.config['FLASKY_MAIL_SENDER'] = 'Flasky Admin <zjuguxi@gmail.com>'
 app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
@@ -34,7 +36,12 @@ manager.add_command('db', MigrateCommand)
 mail = Mail(app)
 
 
-
+def send_email(to, subject, template, **kwargs)
+    msg = Message(app.config['FLASKY_MAIL_SUBJECT_PREFIX'] + subject,
+        sender = app.config['FLASKY_MAIL_SENDER'], recipients = [to])
+    msg.body = render_template(template + '.txt', **kwargs)
+    msg.html = render_template(tenplate + '.html', **kwargs)
+    mail.send(msg)
 
 def make_shell_context():
     return dict(app = app, db = db, User = User, Role = Role)
