@@ -1,6 +1,17 @@
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask.ext.login import UserMixin
+from . import login_manager
+from flask.ext.login import login_required
+
+@app.route('/secret')
+@login_required
+def secret():
+    return 'Only authenticated users are allowed! '
+
+@login_manager.users_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 class Role(db.Model):
     __tablename__ = 'roles'
@@ -33,3 +44,4 @@ class User(db.Model):
     
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
+
