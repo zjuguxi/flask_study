@@ -70,6 +70,9 @@ class User(UserMixin, db.Model):
             (self.role.permissions & permissions) == permissions
     def is_administrator(self):
         return self.can(Permission.ADMINISTER)
+    def ping(self):
+        self.last_seen = datetime.utcnow()
+        db.session.add(self)
 
 class AnonymousUser(AnonymousUserMixin):
     def can(self, permissions):
