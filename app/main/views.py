@@ -1,4 +1,5 @@
 from flask import render_template, abort
+from flask.ext.login import login_required 
 from . import main
 from ..models import User
 
