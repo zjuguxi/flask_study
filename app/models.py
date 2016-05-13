@@ -70,7 +70,7 @@ class User(UserMixin, db.Model):
             if self.role is None:
                 self.role = Role.query.filter_by(default=True).first()
 
-    def gravatar(self, size = 100, default = 'identicon', rating = 'g')
+    def gravatar(self, size = 100, default = 'identicon', rating = 'g'):
         if request.is_secure:
             url = 'http://secure.gravatar.com/avatar'
         else:

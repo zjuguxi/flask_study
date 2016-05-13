@@ -1,7 +1,8 @@
 from flask import render_template, abort
-from flask.ext.login import login_required, admin_required
+from flask.ext.login import login_required
 from . import main
 from ..models import User
+from ..decorators import admin_required
 
 
 @main.route('/')
