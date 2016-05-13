@@ -5,6 +5,9 @@ from wtforms.validators import Required, Length, Email, Regexp
 from wtforms import ValidationError
 from ..models import Role, User
 
+class PostForm(Form):
+    body = TextAreaField('What\'s on your mind?', validators = [Required()])
+    submit = SubmitField('Submit')
 
 class NameForm(Form):
     name = StringField('What is your name?', validators=[Required()])
