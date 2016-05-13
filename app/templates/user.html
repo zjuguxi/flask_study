@@ -14,6 +14,13 @@
         {% endif %}
     </p>
     {% endif %}
+
+    {% if current_user.is_administrator() %}
+    <a class = 'btn btn-danger' href="{{ url_for('.edit_profile_admin', id = user.id) }}">
+        Edit Profile [Admin]
+    </a>
+    {% endif %}
+    
     {% if user == current_user %}
     <a class = 'btn btn-defualt' href="{{ url_for('.edit_profile') }}">
         Edit Profile
