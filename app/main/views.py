@@ -5,17 +5,12 @@ from .forms import EditProfileForm, EditProfileAdminForm
 from .. import db
 from ..models import Role, User
 from ..decorators import admin_required
+from ..email import send_email
 
 
-@main.route('/'， methods = ['GET', 'POST'])
+@main.route('/')
 def index():
-    form = PostForm()
-    if current_user.can(Permission.WRITE_ARTICLES) and \
-                form.validate_on_submit():
-        post = Post(body = form.body.data, author = current_user._get_current_object())
-        db.session.add(post)
-    posts = Post.query.order_by(Post.timestamp.desc()).all()
-    return render_template('index.html', form = form, posts = posts)
+    return render_template('index.html')
 
 
 @main.route('/user/<username>')
