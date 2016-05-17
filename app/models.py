@@ -6,28 +6,6 @@ from flask import current_app, request
 from flask.ext.login import UserMixin, AnonymousUserMixin
 from . import db, login_manager
 
-class Post(db.Model):
-    __tablename__ = 'posts'
-    id = db.Column(db.Integer, primary_key = True)
-    body = db.Column(db.Text)
-    tiemstamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
-    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    
-    @staticmethod
-    def generate_fake(count = 100):
-        from random import seed, randint
-        import forgery_py
-
-        seed()
-        user_count = User.query.count()
-        for i in range(count):
-            u = User.query.offset(randint(0, user_count - 1)).first()
-            p = Post(body = forgery_py.lorem_ipsum.sentence(radint(1, 3)),
-                            tiemstamp = forgery_py.date.date(True),
-                            author = u)
-            db.session.add(p)
-            db.session.commit()
-
 class Permission:
     FOLLOW = 0x01
     COMMENT = 0x02
@@ -103,7 +81,7 @@ class User(UserMixin, db.Model):
             db.session.add(u)
             try:
                 db.session.commit()
-            except:
+            except IntegrityError:
                 db.session.rollback()
 
     def __init__(self, **kwargs):
@@ -221,3 +199,25 @@ login_manager.anonymous_user = AnonymousUser
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+class Post(db.Model):
+    __tablename__ = 'posts'
+    id = db.Column(db.Integer, primary_key = True)
+    body = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    
+    @staticmethod
+    def generate_fake(count = 100):
+        from random import seed, randint
+        import forgery_py
+
+        seed()
+        user_count = User.query.count()
+        for i in range(count):
+            u = User.query.offset(randint(0, user_count - 1)).first()
+            p = Post(body = forgery_py.lorem_ipsum.sentences(randint(1, 3)),
+                            timestamp = forgery_py.date.date(True),
+                            author = u)
+            db.session.add(p)
+            db.session.commit()
