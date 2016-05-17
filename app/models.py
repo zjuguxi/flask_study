@@ -6,6 +6,7 @@ from flask import current_app, request
 from flask.ext.login import UserMixin, AnonymousUserMixin
 from . import db, login_manager
 
+
 class Permission:
     FOLLOW = 0x01
     COMMENT = 0x02
@@ -22,6 +23,7 @@ class Role(db.Model):
     permissions = db.Column(db.Integer)
     users = db.relationship('User', backref='role', lazy='dynamic')
 
+    @staticmethod
     def insert_roles():
         roles = {
             'User': (Permission.FOLLOW |
@@ -60,7 +62,7 @@ class User(UserMixin, db.Model):
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
     avatar_hash = db.Column(db.String(32))
-    posts = db.relationship('Post', backref = 'author', lazy = 'dynamic')
+    posts = db.relationship('Post', backref='author', lazy='dynamic')
 
     @staticmethod
     def generate_fake(count=100):
@@ -70,14 +72,14 @@ class User(UserMixin, db.Model):
 
         seed()
         for i in range(count):
-            u = User(email = forgery_py.internet.email_address(),
-                            username = forgery_py.internet.user_name(True),
-                            password = forgery_py.lorem_ipsum.word(),
-                            confirmed = True,
-                            name = forgery_py.name.full_name(),
-                            location = forgery_py.address.city(),
-                            about_me = forgery_py.lorem_ipsum.sentence(),
-                            member_since = forgery_py.date.date(True))
+            u = User(email=forgery_py.internet.email_address(),
+                     username=forgery_py.internet.user_name(True),
+                     password=forgery_py.lorem_ipsum.word(),
+                     confirmed=True,
+                     name=forgery_py.name.full_name(),
+                     location=forgery_py.address.city(),
+                     about_me=forgery_py.lorem_ipsum.sentence(),
+                     member_since=forgery_py.date.date(True))
             db.session.add(u)
             try:
                 db.session.commit()
@@ -200,15 +202,16 @@ login_manager.anonymous_user = AnonymousUser
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+
 class Post(db.Model):
     __tablename__ = 'posts'
-    id = db.Column(db.Integer, primary_key = True)
+    id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text)
-    timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    
+
     @staticmethod
-    def generate_fake(count = 100):
+    def generate_fake(count=100):
         from random import seed, randint
         import forgery_py
 
@@ -216,8 +219,8 @@ class Post(db.Model):
         user_count = User.query.count()
         for i in range(count):
             u = User.query.offset(randint(0, user_count - 1)).first()
-            p = Post(body = forgery_py.lorem_ipsum.sentences(randint(1, 3)),
-                            timestamp = forgery_py.date.date(True),
-                            author = u)
+            p = Post(body=forgery_py.lorem_ipsum.sentences(randint(1, 5)),
+                     timestamp=forgery_py.date.date(True),
+                     author=u)
             db.session.add(p)
             db.session.commit()
