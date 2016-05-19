@@ -121,6 +121,10 @@ class User(UserMixin, db.Model):
     @property
     def password(self):
         raise AttributeError('password is not a readable attribute')
+    @property
+    def followed_posts(self):
+        return Post.query.join(Follow, Follow.followed_id == Post.author_id) \
+            .filter(Follow.followed_id == self.id)
 
     @password.setter
     def password(self, password):
