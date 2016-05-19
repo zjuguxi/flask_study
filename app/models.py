@@ -64,6 +64,17 @@ class User(UserMixin, db.Model):
     avatar_hash = db.Column(db.String(32))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
 
+    followed_id = db.relationship('Follow',
+                                                    foriegn_key = [Follow.follower_id], 
+                                                    backref = db.backref('follower', lazy = 'joined'), 
+                                                    lazy = 'dynamic',
+                                                    cascade = 'all, delete-orphan')
+    followers_id = db.relationship('Follow',
+                                                     foriegn_key = [Follow.followed_id],
+                                                     backref = db.backref('followed', lazy = 'joined'),
+                                                     lazy = 'dynamic',
+                                                     cascade = 'all, delete-orphan')
+
     @staticmethod
     def generate_fake(count=100):
         from sqlalchemy.exc import IntegrityError
@@ -228,5 +239,11 @@ class Post(db.Model):
     def on_changed_body(target, value, oldvalue, initiator):
         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3', 'p']
         target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format = 'html'), tags = allowed_tags, strip = True))
+
+class Follow(db.Modle):
+    __tablename__ = 'follows'
+    follower_id = db.Column(db.Integer, db.ForiegnKey('user.id'), primary_key = True)
+    followed_id = db.Column(db.Integer, db.ForiegnKey('user.id'), primary_key = True)
+    timestamp = db.Column(db.Datetime, default = datetime.utcnow)
 
 db.event.listen(Post.body, 'set', Post.on_changed_body)
