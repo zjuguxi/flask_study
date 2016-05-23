@@ -33,3 +33,9 @@
     </li>
     {% endfor %}
 </ul>
+
+<a href = '{{ url_for('.post', id = post.id) }}#comments'>
+    <span class = 'label label-primary'>
+        {{ post.comments.count() }} Comments
+    </span>
+</a>
