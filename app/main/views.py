@@ -22,8 +22,20 @@ def index():
         page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
         error_out=False)
     posts = pagination.items
+
+    show_followed = False
+    if current_user.is_authenticated():
+        show_followed = bool(request.cookied.get('show_followed', ' '))
+    if show_followed:
+        query =current_user.followed_posts
+    else:
+        query = Post.query
+    pagination = query.order_by(Post.timestamp.desc()).pagination(page, 
+        per_page = current_app.config['FLASKY_POSTS_PER_PAGE'],
+        error_out = False)
+    posts = pagination.items
     return render_template('index.html', form=form, posts=posts,
-                           pagination=pagination)
+                           show_followde = show_followed, pagination=pagination)
 
 
 @main.route('/user/<username>')
