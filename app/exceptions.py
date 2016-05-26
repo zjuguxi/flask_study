@@ -1,0 +1,2 @@
+class ValidarionError:
+    pass
