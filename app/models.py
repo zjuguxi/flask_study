@@ -294,6 +294,17 @@ class Post(db.Model):
         }
         return json_post
 
+        json_user = {
+                'url': url_for('api.get_post', id = self.id, _external = True),
+                'username': self.username,
+                'member_since': self.member_since,
+                'last_seen': self.last_seen,
+                'posts': url_for('api.get_user_posts', id = self.id, _external = True),
+                'followed_posts': url_for('api.get_user_followed_posts', id = self.id, _external = True),
+                'post_count': self.posts.count()
+        }
+        return json_user
+
     @staticmethod
     def generate_fake(count=100):
         from random import seed, randint
