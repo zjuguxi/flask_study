@@ -280,6 +280,20 @@ class Post(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
 
+    def to_json(self):
+        json_post = {
+                'url': url_for('api.get_post', id = self.id, _external = True),]
+                'body': self.body,
+                'body_html': self.body_html,
+                'timestamp': self.timestamp,
+                'author': url_for('api.get_user', id = self.author_id,
+                                         _external = True),
+                'comments': url_for('api.get_post_comments', id = self.id,
+                                         _external = True),
+                'comment_count': self.comments.count()
+        }
+        return json_post
+
     @staticmethod
     def generate_fake(count=100):
         from random import seed, randint
